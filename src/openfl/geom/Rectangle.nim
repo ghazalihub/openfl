@@ -105,7 +105,7 @@ proc intersection*(self: Rectangle, toIntersect: Rectangle): Rectangle =
   if y1 <= y0:
     return newRectangle()
 
-  newRectangle(x0, y0, x1 - x0, y1 - y0)
+  return newRectangle(x0, y0, x1 - x0, y1 - y0)
 
 proc setTo*(self: Rectangle, xa: float64, ya: float64, widtha: float64, heighta: float64)
 
@@ -127,7 +127,7 @@ proc intersectionToOutput*(self: Rectangle, toIntersect: Rectangle, output: Rect
     return res
 
   res.setTo(x0, y0, x1 - x0, y1 - y0)
-  res
+  return res
 
 proc intersects*(self: Rectangle, toIntersect: Rectangle): bool =
   let x0 = if self.x < toIntersect.x: toIntersect.x else: self.x
@@ -139,7 +139,7 @@ proc intersects*(self: Rectangle, toIntersect: Rectangle): bool =
   let y0 = if self.y < toIntersect.y: toIntersect.y else: self.y
   let y1 = if self.bottom > toIntersect.bottom: toIntersect.bottom else: self.bottom
 
-  y1 > y0
+  return y1 > y0
 
 proc isEmpty*(self: Rectangle): bool =
   self.width <= 0 or self.height <= 0
@@ -178,7 +178,7 @@ proc union*(self: Rectangle, toUnion: Rectangle): Rectangle =
   let y0 = if self.y > toUnion.y: toUnion.y else: self.y
   let y1 = if self.bottom < toUnion.bottom: toUnion.bottom else: self.bottom
 
-  newRectangle(x0, y0, x1 - x0, y1 - y0)
+  return newRectangle(x0, y0, x1 - x0, y1 - y0)
 
 proc unionToOutput*(self: Rectangle, toUnion: Rectangle, output: Rectangle): Rectangle =
   var res = if output.isNil: newRectangle() else: output
@@ -196,7 +196,7 @@ proc unionToOutput*(self: Rectangle, toUnion: Rectangle, output: Rectangle): Rec
   let y1 = if self.bottom < toUnion.bottom: toUnion.bottom else: self.bottom
 
   res.setTo(x0, y0, x1 - x0, y1 - y0)
-  res
+  return res
 
 proc contract*(self: Rectangle, x: float64, y: float64, width: float64, height: float64) =
   if self.width == 0 and self.height == 0:

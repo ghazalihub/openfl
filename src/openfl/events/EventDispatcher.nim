@@ -45,7 +45,7 @@ proc addEventListener*(self: EventDispatcher, typeStr: string, listener: proc (e
   else:
     var list = self.eventMap[typeStr]
     for l in list:
-      if l.callback == listener and l.useCapture == useCapture: return
+      if rawProc(l.callback) == rawProc(listener) and l.useCapture == useCapture: return
 
     let iterators = self.iterators[typeStr]
     for it in iterators:
@@ -75,7 +75,7 @@ proc removeEventListener*(self: EventDispatcher, typeStr: string, listener: proc
   var list = self.eventMap[typeStr]
   var foundIndex = -1
   for i in 0..<list.len:
-    if list[i].callback == listener and list[i].useCapture == useCapture:
+    if rawProc(list[i].callback) == rawProc(listener) and list[i].useCapture == useCapture:
       foundIndex = i
       break
 

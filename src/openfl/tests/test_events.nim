@@ -1,5 +1,5 @@
-import ./events/Event
-import ./events/IOErrorEvent
+import ../events/Event
+import ../events/IOErrorEvent
 
 proc testEvents() =
   echo "Testing Event..."

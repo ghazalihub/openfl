@@ -1,6 +1,6 @@
-import ./geom/Point
-import ./geom/Rectangle
-import ./geom/Matrix
+import ../geom/Point
+import ../geom/Rectangle
+import ../geom/Matrix
 
 proc testPoint() =
   echo "Testing Point..."

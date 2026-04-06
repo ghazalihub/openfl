@@ -1,6 +1,6 @@
-import ./events/Event
-import ./events/EventDispatcher
-import ./events/MouseEvent
+import ../events/Event
+import ../events/EventDispatcher
+import ../events/MouseEvent
 
 proc testDispatcher() =
   echo "Testing EventDispatcher..."

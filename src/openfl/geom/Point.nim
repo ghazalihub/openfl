@@ -31,13 +31,13 @@ proc copyFrom*(self: Point, sourcePoint: Point) =
 proc distance*(pt1: Point, pt2: Point): float64 =
   let dx = pt1.x - pt2.x
   let dy = pt1.y - pt2.y
-  sqrt(dx * dx + dy * dy)
+  return sqrt(dx * dx + dy * dy)
 
 proc equals*(self: Point, toCompare: Point): bool =
-  not toCompare.isNil and self.x == toCompare.x and self.y == toCompare.y
+  return not toCompare.isNil and self.x == toCompare.x and self.y == toCompare.y
 
 proc interpolate*(pt1: Point, pt2: Point, f: float64): Point =
-  newPoint(pt2.x + f * (pt1.x - pt2.x), pt2.y + f * (pt1.y - pt2.y))
+  return newPoint(pt2.x + f * (pt1.x - pt2.x), pt2.y + f * (pt1.y - pt2.y))
 
 proc interpolateToOutput*(pt1: Point, pt2: Point, f: float64, output: Point): Point =
   if output != nil:
