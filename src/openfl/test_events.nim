@@ -16,7 +16,7 @@ proc testEvents() =
   assert ioe.text == "File not found"
   assert ioe.errorID == 404
 
-  let ioeClone = ioe.clone().IOErrorEvent
+  let ioeClone = IOErrorEvent(ioe.clone())
   echo "IOErrorEvent Clone: ", $ioeClone
   assert ioeClone.`type` == ioe.`type`
   assert ioeClone.text == ioe.text

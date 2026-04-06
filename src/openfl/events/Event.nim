@@ -8,9 +8,9 @@ type
     eventPhase*: EventPhase
     target*: RootRef
     `type`*: string
-    isCanceled: bool
-    isCanceledNow: bool
-    preventDefaultFlag: bool
+    kindIsCanceled*: bool
+    kindIsCanceledNow*: bool
+    kindPreventDefaultFlag: bool
 
 const
   ACTIVATE* = "activate"
@@ -68,18 +68,18 @@ method clone*(self: Event): Event {.base.} =
   return event
 
 proc isDefaultPrevented*(self: Event): bool =
-  self.preventDefaultFlag
+  self.kindPreventDefaultFlag
 
 proc preventDefault*(self: Event) =
   if self.cancelable:
-    self.preventDefaultFlag = true
+    self.kindPreventDefaultFlag = true
 
 proc stopImmediatePropagation*(self: Event) =
-  self.isCanceled = true
-  self.isCanceledNow = true
+  self.kindIsCanceled = true
+  self.kindIsCanceledNow = true
 
 proc stopPropagation*(self: Event) =
-  self.isCanceled = true
+  self.kindIsCanceled = true
 
 method toString*(self: Event): string {.base.} =
   "[Event type=" & self.`type` & " bubbles=" & $self.bubbles & " cancelable=" & $self.cancelable & "]"

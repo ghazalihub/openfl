@@ -1,4 +1,4 @@
-import math
+import std/math
 import ./Point
 
 type
@@ -136,8 +136,8 @@ proc rotate*(self: Matrix, theta: float64) =
 
 proc scale*(self: Matrix, sx: float64, sy: float64) =
   self.a *= sx
-  self.b *= sy
-  self.c *= sx
+  self.b *= sx
+  self.c *= sy
   self.d *= sy
   self.tx *= sx
   self.ty *= sy
