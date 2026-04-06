@@ -43,8 +43,8 @@ proc createBox*(self: Matrix, scaleX: float64, scaleY: float64, rotation: float6
     let sinRotation = sin(rotation)
 
     self.a = cosRotation * scaleX
-    self.b = sinRotation * scaleY
-    self.c = -sinRotation * scaleX
+    self.b = sinRotation * scaleX
+    self.c = -sinRotation * scaleY
     self.d = cosRotation * scaleY
   else:
     self.a = scaleX
