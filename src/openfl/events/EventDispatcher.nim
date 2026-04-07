@@ -20,12 +20,15 @@ type
     iterators: TableRef[string, seq[DispatchIterator]]
     targetDispatcher: EventDispatcher
 
+proc initEventDispatcher*(self: EventDispatcher, target: EventDispatcher = nil) =
+  self.eventMap = new(TableRef[string, seq[Listener]])
+  self.iterators = new(TableRef[string, seq[DispatchIterator]])
+  self.targetDispatcher = target
+
 proc newEventDispatcher*(target: EventDispatcher = nil): EventDispatcher =
-  EventDispatcher(
-    eventMap: new(TableRef[string, seq[Listener]]),
-    iterators: new(TableRef[string, seq[DispatchIterator]]),
-    targetDispatcher: target
-  )
+  let self = EventDispatcher()
+  self.initEventDispatcher(target)
+  return self
 
 proc addListenerByPriority(list: var seq[Listener], listener: Listener) =
   var addAtPosition = list.len
@@ -35,7 +38,7 @@ proc addListenerByPriority(list: var seq[Listener], listener: Listener) =
       break
   list.insert(listener, addAtPosition)
 
-proc addEventListener*(self: EventDispatcher, typeStr: string, listener: proc (event: Event), useCapture: bool = false, priority: int = 0, useWeakReference: bool = false) =
+method addEventListener*(self: EventDispatcher, typeStr: string, listener: proc (event: Event), useCapture: bool = false, priority: int = 0, useWeakReference: bool = false) {.base.} =
   if listener.isNil: return
 
   if not self.eventMap.hasKey(typeStr):
@@ -45,7 +48,7 @@ proc addEventListener*(self: EventDispatcher, typeStr: string, listener: proc (e
   else:
     var list = self.eventMap[typeStr]
     for l in list:
-      if rawProc(l.callback) == rawProc(listener) and l.useCapture == useCapture: return
+      if l.callback.rawProc == listener.rawProc and l.useCapture == useCapture: return
 
     let iterators = self.iterators[typeStr]
     for it in iterators:
@@ -66,16 +69,16 @@ proc addEventListener*(self: EventDispatcher, typeStr: string, listener: proc (e
       if not it.active and not it.isCopy:
         it.list = self.eventMap[typeStr]
 
-proc hasEventListener*(self: EventDispatcher, typeStr: string): bool =
+method hasEventListener*(self: EventDispatcher, typeStr: string): bool {.base.} =
   self.eventMap.hasKey(typeStr)
 
-proc removeEventListener*(self: EventDispatcher, typeStr: string, listener: proc (event: Event), useCapture: bool = false) =
+method removeEventListener*(self: EventDispatcher, typeStr: string, listener: proc (event: Event), useCapture: bool = false) {.base.} =
   if not self.eventMap.hasKey(typeStr) or listener.isNil: return
 
   var list = self.eventMap[typeStr]
   var foundIndex = -1
   for i in 0..<list.len:
-    if rawProc(list[i].callback) == rawProc(listener) and list[i].useCapture == useCapture:
+    if list[i].callback.rawProc == listener.rawProc and list[i].useCapture == useCapture:
       foundIndex = i
       break
 
@@ -97,7 +100,7 @@ proc removeEventListener*(self: EventDispatcher, typeStr: string, listener: proc
       self.eventMap.del(typeStr)
       self.iterators.del(typeStr)
 
-proc dispatchEvent*(self: EventDispatcher, event: Event): bool =
+method dispatchEvent*(self: EventDispatcher, event: Event): bool {.base.} =
   if event.target.isNil:
     if not self.targetDispatcher.isNil:
       event.target = self.targetDispatcher
@@ -147,5 +150,5 @@ proc dispatchEvent*(self: EventDispatcher, event: Event): bool =
 
   return not event.isDefaultPrevented()
 
-proc willTrigger*(self: EventDispatcher, typeStr: string): bool =
+method willTrigger*(self: EventDispatcher, typeStr: string): bool {.base.} =
   self.hasEventListener(typeStr)

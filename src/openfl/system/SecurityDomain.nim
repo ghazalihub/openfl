@@ -1,0 +1,2 @@
+type
+  SecurityDomain* = ref object

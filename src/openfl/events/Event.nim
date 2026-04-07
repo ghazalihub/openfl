@@ -10,7 +10,7 @@ type
     `type`*: string
     kindIsCanceled*: bool
     kindIsCanceledNow*: bool
-    kindPreventDefaultFlag: bool
+    kindPreventDefaultFlag*: bool
 
 const
   ACTIVATE* = "activate"
