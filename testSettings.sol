@@ -1,3 +1,0 @@
-{
-  "key": "Hello Persistence"
-}
