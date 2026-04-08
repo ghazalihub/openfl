@@ -1,12 +1,16 @@
 import sdl2
 import ./Window
 import ../events/EventDispatcher
+import ../events/Event
+import ../ui/Keyboard
+import ../ui/KeyLocation
 
 type
   Application* = ref object of EventDispatcher
     windows*: seq[Window]
 
 proc newApplication*(): Application =
+  discard sdl2.init(INIT_EVERYTHING)
   let self = Application(windows: @[])
   self.initEventDispatcher()
   return self
@@ -22,15 +26,25 @@ proc exec*(self: Application): int =
 
   while running:
     while pollEvent(event):
-      if event.kind == QuitEvent:
+      case event.kind:
+      case QuitEvent:
         running = false
-        break
+      case KeyDown:
+        # TODO: map to openfl KeyboardEvent
+        discard
+      case MouseButtonDown:
+        # TODO: map to openfl MouseEvent
+        discard
+      else:
+        discard
 
     # Simple render loop
     for win in self.windows:
-      setRenderDrawColor(win.sdlRenderer, 0, 0, 0, 255)
+      setRenderDrawColor(win.sdlRenderer, 255, 255, 255, 255) # Clear to white
       clear(win.sdlRenderer)
-      # TODO: Render stage
+
+      # TODO: implement hierarchical rendering of the stage
+
       present(win.sdlRenderer)
 
     delay(16) # ~60fps

@@ -2,10 +2,11 @@ import ./Endian
 import ./IDataInput
 import ./IDataOutput
 import std/streams
+import std/endians
 
 type
   ByteArray* = ref object of RootObj
-    data*: string # Using string as backing storage for convenience
+    data*: string
     position*: int
     endian*: Endian
     objectEncoding*: int
@@ -25,10 +26,7 @@ proc length*(self: ByteArray): int =
   return self.data.len
 
 proc `length=`*(self: ByteArray, value: int) =
-  if value > self.data.len:
-    self.data.setLen(value)
-  elif value < self.data.len:
-    self.data.setLen(value)
+  self.data.setLen(value)
   if self.position > value:
     self.position = value
 
@@ -55,12 +53,41 @@ proc readUnsignedByte*(self: ByteArray): int =
   self.position += 1
   return res
 
-proc readUTF*(self: ByteArray): string =
-  # Very simplified: read uint16 length, then bytes
-  if self.bytesAvailable() < 2: return ""
-  # Assume BIG_ENDIAN for UTF
-  let len = (int(uint8(self.data[self.position])) shl 8) or int(uint8(self.data[self.position + 1]))
+proc readShort*(self: ByteArray): int =
+  if self.bytesAvailable() < 2: return 0
+  var val: int16
+  copyMem(addr val, addr self.data[self.position], 2)
+  if self.endian == BIG_ENDIAN:
+    var res: int16
+    bigEndian16(addr res, addr val)
+    val = res
   self.position += 2
+  return int(val)
+
+proc readInt*(self: ByteArray): int =
+  if self.bytesAvailable() < 4: return 0
+  var val: int32
+  copyMem(addr val, addr self.data[self.position], 4)
+  if self.endian == BIG_ENDIAN:
+    var res: int32
+    bigEndian32(addr res, addr val)
+    val = res
+  self.position += 4
+  return int(val)
+
+proc readDouble*(self: ByteArray): float64 =
+  if self.bytesAvailable() < 8: return 0.0
+  var val: float64
+  copyMem(addr val, addr self.data[self.position], 8)
+  if self.endian == BIG_ENDIAN:
+    var res: float64
+    bigEndian64(addr res, addr val)
+    val = res
+  self.position += 8
+  return val
+
+proc readUTF*(self: ByteArray): string =
+  let len = self.readShort()
   if self.bytesAvailable() < len: return ""
   let res = self.data[self.position ..< self.position + len]
   self.position += len
@@ -75,10 +102,27 @@ proc writeByte*(self: ByteArray, value: int) =
     self.data.add(b)
   self.position += 1
 
+proc writeInt*(self: ByteArray, value: int) =
+  var val = int32(value)
+  if self.endian == BIG_ENDIAN:
+    var swapped: int32
+    bigEndian32(addr swapped, addr val)
+    val = swapped
+  let bytes = cast[array[4, char]](val)
+  for b in bytes: self.writeByte(int(b))
+
+proc writeDouble*(self: ByteArray, value: float64) =
+  var val = value
+  if self.endian == BIG_ENDIAN:
+    var swapped: float64
+    bigEndian64(addr swapped, addr val)
+    val = swapped
+  let bytes = cast[array[8, char]](val)
+  for b in bytes: self.writeByte(int(b))
+
 proc writeUTF*(self: ByteArray, value: string) =
   let len = value.len
-  self.writeByte((len shr 8) and 0xFF)
-  self.writeByte(len and 0xFF)
+  self.writeInt(len) # Simplified to int for now
   for c in value:
     self.writeByte(int(c))
 

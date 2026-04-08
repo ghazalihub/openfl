@@ -34,5 +34,16 @@ proc setPixel*(self: BitmapData, x: int, y: int, color: uint32) =
   c.b = uint8(color)
   self.image.setRgbx(x, y, c)
 
+proc fillRect*(self: BitmapData, rect: Rectangle, color: uint32) =
+  let c = rgba(uint8(color shr 16), uint8(color shr 8), uint8(color), uint8(color shr 24))
+  self.image.fill(c) # Simple implementation
+
+proc copyPixels*(self: BitmapData, source: BitmapData, sourceRect: Rectangle, destPoint: Point) =
+  self.image.draw(source.image, vec2(destPoint.x, destPoint.y))
+
+proc draw*(self: BitmapData, source: RootRef, matrix: Matrix = nil) =
+  # TODO: implement rendering of DisplayObjects onto BitmapData
+  discard
+
 proc dispose*(self: BitmapData) =
   self.image = nil
