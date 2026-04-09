@@ -101,7 +101,9 @@ open class EventDispatcher(private val target: IEventDispatcher? = null) : IEven
     }
 
     override fun dispatchEvent(event: Event): Boolean {
-        event.target = target ?: this
+        if (event.target == null) {
+            event.target = target ?: this
+        }
         return __dispatchEvent(event)
     }
 
@@ -138,7 +140,7 @@ open class EventDispatcher(private val target: IEventDispatcher? = null) : IEven
         return hasEventListener(type)
     }
 
-    private fun __dispatchEvent(event: Event): Boolean {
+    internal open fun __dispatchEvent(event: Event): Boolean {
         val list = eventMap[event.type] ?: return true
 
         if (event.target == null) {
