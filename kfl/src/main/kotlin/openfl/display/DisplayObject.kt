@@ -33,7 +33,7 @@ abstract class DisplayObject : EventDispatcher(), IBitmapDrawable {
             field = value
         }
 
-    var height: Double
+    open var height: Double
         get() {
             val rect = Rectangle()
             __getLocalBounds(rect)
@@ -136,7 +136,7 @@ abstract class DisplayObject : EventDispatcher(), IBitmapDrawable {
             field = value
         }
 
-    var width: Double
+    open var width: Double
         get() {
             val rect = Rectangle()
             __getLocalBounds(rect)

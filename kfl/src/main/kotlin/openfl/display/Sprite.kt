@@ -9,8 +9,7 @@ open class Sprite : DisplayObjectContainer() {
     var buttonMode: Boolean = false
     var useHandCursor: Boolean = true
 
-    // Graphics object placeholder
-    // val graphics: Graphics by lazy { Graphics(this) }
+    val graphics: Graphics by lazy { Graphics(this) }
 
     init {
         __drawableType = IBitmapDrawableType.SPRITE

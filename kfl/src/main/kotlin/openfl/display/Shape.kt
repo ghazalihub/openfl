@@ -5,8 +5,7 @@ import openfl.geom.Rectangle
 
 open class Shape : DisplayObject() {
 
-    // Graphics object placeholder
-    // val graphics: Graphics by lazy { Graphics(this) }
+    val graphics: Graphics by lazy { Graphics(this) }
 
     init {
         __drawableType = openfl.display._internal.IBitmapDrawableType.DISPLAY_OBJECT
