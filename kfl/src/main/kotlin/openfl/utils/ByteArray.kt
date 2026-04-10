@@ -4,7 +4,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 open class ByteArray(capacity: Int = 0) {
-    private var __buffer: ByteBuffer = ByteBuffer.allocate(capacity).order(ByteOrder.BIG_ENDIAN)
+    private var __buffer: ByteBuffer = ByteBuffer.allocate(maxOf(capacity, 1)).order(ByteOrder.BIG_ENDIAN)
 
     var endian: Endian
         get() = if (__buffer.order() == ByteOrder.BIG_ENDIAN) Endian.BIG_ENDIAN else Endian.LITTLE_ENDIAN
@@ -17,7 +17,7 @@ open class ByteArray(capacity: Int = 0) {
         get() = __buffer.position()
         set(value) { __buffer.position(value) }
 
-    val bytesAvailable: Int get() = __buffer.remaining()
+    val bytesAvailable: Int get() = __buffer.limit() - __buffer.position()
 
     fun writeByte(value: Int) = __ensureCapacity(1).also { __buffer.put(value.toByte()) }
     fun writeInt(value: Int) = __ensureCapacity(4).also { __buffer.putInt(value) }
@@ -31,7 +31,7 @@ open class ByteArray(capacity: Int = 0) {
     fun readInt(): Int = __buffer.getInt()
     fun readDouble(): Double = __buffer.double
     fun readUTFBytes(length: Int): String {
-        val bytes = ByteArray(length)
+        val bytes = kotlin.ByteArray(length)
         __buffer.get(bytes)
         return String(bytes, Charsets.UTF_8)
     }
@@ -41,19 +41,22 @@ open class ByteArray(capacity: Int = 0) {
             val newCapacity = maxOf(__buffer.capacity() * 2, __buffer.position() + additional)
             val newBuffer = ByteBuffer.allocate(newCapacity).order(__buffer.order())
             val pos = __buffer.position()
-            __buffer.flip()
+            val limit = __buffer.limit()
+            __buffer.position(0)
+            __buffer.limit(limit)
             newBuffer.put(__buffer)
             newBuffer.position(pos)
+            newBuffer.limit(maxOf(limit, pos + additional))
             __buffer = newBuffer
-        }
-        if (__buffer.position() + additional > __buffer.limit()) {
+        } else if (__buffer.position() + additional > __buffer.limit()) {
             __buffer.limit(__buffer.position() + additional)
         }
     }
 
     fun toByteArray(): kotlin.ByteArray {
         val pos = __buffer.position()
-        val arr = kotlin.ByteArray(__buffer.limit())
+        val limit = __buffer.limit()
+        val arr = kotlin.ByteArray(limit)
         __buffer.position(0)
         __buffer.get(arr)
         __buffer.position(pos)

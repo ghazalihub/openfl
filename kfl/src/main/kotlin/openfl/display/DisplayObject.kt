@@ -53,24 +53,29 @@ abstract class DisplayObject : EventDispatcher(), IBitmapDrawable {
     var mask: DisplayObject? = null
         set(value) {
             if (value === field) return
-            // In OpenFL/Flash, a mask can only belong to one object
-            // field?.__maskTarget = null
             field = value
-            // value?.__maskTarget = this
             __setRenderDirty()
         }
 
     var mouseX: Double = 0.0
-        get() = 0.0 // Needs Stage reference
+        get() {
+            val stage = stage ?: return 0.0
+            val pos = globalToLocal(Point(stage.__mouseX, stage.__mouseY))
+            return pos.x
+        }
         private set
 
     var mouseY: Double = 0.0
-        get() = 0.0 // Needs Stage reference
+        get() {
+            val stage = stage ?: return 0.0
+            val pos = globalToLocal(Point(stage.__mouseX, stage.__mouseY))
+            return pos.y
+        }
         private set
 
     var name: String = ""
 
-    var stage: Any? = null // Placeholder for Stage
+    var stage: Stage? = null
         internal set
 
     var parent: DisplayObjectContainer? = null
@@ -202,11 +207,9 @@ abstract class DisplayObject : EventDispatcher(), IBitmapDrawable {
     }
 
     fun globalToLocal(pos: Point): Point {
-        val result = Point()
-        __getRenderTransform()
-        result.x = __renderTransform.tx // Simplification for now
-        // TODO: Full inverse transform
-        return result
+        val inv = __getRenderTransform().clone()
+        inv.invert()
+        return inv.transformPoint(pos)
     }
 
     fun localToGlobal(pos: Point): Point {

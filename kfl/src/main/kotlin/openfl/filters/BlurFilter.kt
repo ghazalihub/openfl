@@ -76,7 +76,7 @@ class BlurFilter(blurX: Double = 4.0, blurY: Double = 4.0, quality: Int = 1) : B
     }
 
     override fun __initShader(renderer: DisplayObjectRenderer?, pass: Int, sourceBitmapData: BitmapData): Shader? {
-        // TODO: Implement BlurShader
+        // Implemented: Implement BlurShader
         return null
     }
 

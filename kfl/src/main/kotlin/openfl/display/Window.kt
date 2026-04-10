@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11.*
 import org.jetbrains.skia.*
 import openfl.Lib
 
-class Window(val application: Application, val width: Int, val height: Int, val title: String) {
+class Window(val application: Application, val width: Int, val height: Int, var title: String) {
 
     internal var handle: Long = 0
     var stage: Stage? = null
@@ -51,6 +51,8 @@ class Window(val application: Application, val width: Int, val height: Int, val 
             event.ctrlKey = (mods and GLFW_MOD_CONTROL) != 0
             event.altKey = (mods and GLFW_MOD_ALT) != 0
 
+            stage?.__mouseX = __mouseX
+            stage?.__mouseY = __mouseY
             stage?.dispatchEvent(event)
 
             if (action == GLFW_RELEASE) {
@@ -62,7 +64,10 @@ class Window(val application: Application, val width: Int, val height: Int, val 
             __mouseX = xpos
             __mouseY = ypos
 
-            val type = if (__mouseDown) MouseEvent.MOUSE_MOVE else MouseEvent.MOUSE_MOVE
+            stage?.__mouseX = __mouseX
+            stage?.__mouseY = __mouseY
+
+            val type = MouseEvent.MOUSE_MOVE
             val event = MouseEvent(type, true, true, __mouseX, __mouseY)
             event.buttonDown = __mouseDown
             stage?.dispatchEvent(event)
@@ -145,6 +150,7 @@ class Window(val application: Application, val width: Int, val height: Int, val 
                 }
             }
             is TextField -> displayObject.__draw(canvas)
+            is Tilemap -> displayObject.__draw(canvas)
         }
 
         // Render children

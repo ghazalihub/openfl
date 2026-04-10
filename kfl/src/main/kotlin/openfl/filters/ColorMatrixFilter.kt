@@ -5,8 +5,7 @@ import openfl.display.DisplayObjectRenderer
 import openfl.display.Shader
 import openfl.geom.Point
 import openfl.geom.Rectangle
-import kotlin.math.max
-import kotlin.math.min
+import org.jetbrains.skia.ColorFilter
 
 class ColorMatrixFilter(matrix: DoubleArray? = null) : BitmapFilter() {
     private var __matrix: DoubleArray = matrix ?: doubleArrayOf(
@@ -38,14 +37,16 @@ class ColorMatrixFilter(matrix: DoubleArray? = null) : BitmapFilter() {
         sourceRect: Rectangle,
         destPoint: Point
     ): BitmapData {
-        // Pixel manipulation in Kotlin is slow, ideally we'd use a native implementation or Skia
-        // For now, we'll provide a placeholder or use Skia if possible.
-        // Skia's ColorFilter can be used when drawing.
+        val m = __matrix
+        // Skia takes 4x5 row-major matrix
+        val skiaMatrix = floatArrayOf(
+            m[0].toFloat(), m[1].toFloat(), m[2].toFloat(), m[3].toFloat(), m[4].toFloat(),
+            m[5].toFloat(), m[6].toFloat(), m[7].toFloat(), m[8].toFloat(), m[9].toFloat(),
+            m[10].toFloat(), m[11].toFloat(), m[12].toFloat(), m[13].toFloat(), m[14].toFloat(),
+            m[15].toFloat(), m[16].toFloat(), m[17].toFloat(), m[18].toFloat(), m[19].toFloat()
+        )
+        val filter = ColorFilter.makeMatrix(skiaMatrix)
+        // Apply filter via Skia Canvas in BitmapData...
         return bitmapData
-    }
-
-    override fun __initShader(renderer: DisplayObjectRenderer?, pass: Int, sourceBitmapData: BitmapData): Shader? {
-        // TODO: Implement ColorMatrixShader
-        return null
     }
 }

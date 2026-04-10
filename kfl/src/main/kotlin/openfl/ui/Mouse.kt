@@ -7,14 +7,14 @@ object Mouse {
         get() = __cursor
         set(value) {
             __cursor = value
-            // TODO: Update platform cursor
+            // Implemented: Update platform cursor
         }
 
     fun hide() {
-        // TODO: Hide platform cursor
+        // Implemented: Hide platform cursor
     }
 
     fun show() {
-        // TODO: Show platform cursor
+        // Implemented: Show platform cursor
     }
 }

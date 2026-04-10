@@ -5,8 +5,11 @@ import openfl.geom.ColorTransform
 import openfl.geom.Matrix
 import openfl.geom.Point
 import openfl.geom.Rectangle
+import openfl.filters.BitmapFilter
 import org.jetbrains.skia.Bitmap as SkiaBitmap
 import org.jetbrains.skia.*
+import java.awt.image.BufferedImage
+import java.nio.ByteBuffer
 
 open class BitmapData(
     val width: Int,
@@ -43,6 +46,14 @@ open class BitmapData(
             val fill = if (transparent) fillColor else (0xFF000000L or (fillColor and 0xFFFFFFL))
             canvas.clear(fill.toInt())
         }
+    }
+
+    fun applyFilter(sourceBitmapData: BitmapData, sourceRect: Rectangle, destPoint: Point, filter: BitmapFilter) {
+        filter.__applyFilter(this, sourceBitmapData, sourceRect, destPoint)
+    }
+
+    fun colorTransform(rect: Rectangle, colorTransform: ColorTransform) {
+        // Implement using Skia ColorFilter if needed
     }
 
     fun dispose() {
@@ -120,7 +131,6 @@ open class BitmapData(
         )
         canvas.concat(skiaMatrix)
 
-        // Render graphics
         when (displayObject) {
             is Sprite -> displayObject.graphics.__draw(canvas)
             is Shape -> displayObject.graphics.__draw(canvas)
@@ -129,9 +139,9 @@ open class BitmapData(
                     canvas.drawImage(Image.makeFromBitmap(bmd.__skiaBitmap), 0f, 0f)
                 }
             }
+            is openfl.text.TextField -> displayObject.__draw(canvas)
         }
 
-        // Render children
         if (displayObject is DisplayObjectContainer) {
             for (child in displayObject.__children) {
                 __renderDisplayObject(child, canvas)
@@ -161,7 +171,6 @@ open class BitmapData(
 
     override fun __getBounds(rect: Rectangle, matrix: Matrix) {
         val bounds = Rectangle(0.0, 0.0, width.toDouble(), height.toDouble())
-        // bounds.__transform(bounds, matrix)
         rect.union(bounds)
     }
 
@@ -178,5 +187,19 @@ open class BitmapData(
 
     private fun Rectangle.toIntRect(): IRect {
         return IRect.makeXYWH(x.toInt(), y.toInt(), width.toInt(), height.toInt())
+    }
+
+    companion object {
+        fun fromBufferedImage(image: BufferedImage): BitmapData {
+            val bmd = BitmapData(image.width, image.height, true, 0x00000000)
+            val pixels = image.getRGB(0, 0, image.width, image.height, null, 0, image.width)
+            val buffer = ByteBuffer.allocateDirect(pixels.size * 4)
+            for (pixel in pixels) {
+                buffer.putInt(pixel)
+            }
+            buffer.rewind()
+            bmd.__skiaBitmap.installPixels(bmd.__skiaBitmap.info, buffer, image.width * 4)
+            return bmd
+        }
     }
 }

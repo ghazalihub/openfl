@@ -10,18 +10,12 @@ import openfl.events.*
 import openfl.utils.ByteArray
 import openfl.utils.ObjectPool
 
-enum class URLLoaderDataFormat {
-    BINARY,
-    TEXT,
-    VARIABLES
-}
-
 class URLLoader(request: URLRequest? = null) : EventDispatcher() {
 
     var bytesLoaded: Int = 0
     var bytesTotal: Int = 0
     var data: Any? = null
-    var dataFormat: URLLoaderDataFormat = URLLoaderDataFormat.TEXT
+    var dataFormat: String = URLLoaderDataFormat.TEXT
 
     private val client = HttpClient(CIO)
     private var job: Job? = null
@@ -45,21 +39,32 @@ class URLLoader(request: URLRequest? = null) : EventDispatcher() {
             try {
                 val response: HttpResponse = client.request(url) {
                     method = HttpMethod.parse(request.method)
-                    // TODO: Add headers and data from request
+                    request.requestHeaders.forEach { header ->
+                        headers.append(header.name, header.value)
+                    }
+                    if (request.data != null) {
+                        setBody(request.data.toString())
+                    }
                 }
 
                 val status = response.status.value
                 dispatchEvent(HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS, false, false, status))
 
                 if (response.status.isSuccess()) {
+                    val bytes = response.readRawBytes()
+                    bytesLoaded = bytes.size
+                    bytesTotal = bytes.size
+
                     when (dataFormat) {
                         URLLoaderDataFormat.TEXT -> {
-                            data = response.bodyAsText()
+                            data = String(bytes, Charsets.UTF_8)
                         }
                         URLLoaderDataFormat.BINARY -> {
-                            // data = ByteArray(response.readRawBytes())
+                            data = ByteArray.fromByteArray(bytes)
                         }
-                        else -> {}
+                        URLLoaderDataFormat.VARIABLES -> {
+                            data = URLVariables(String(bytes, Charsets.UTF_8))
+                        }
                     }
                     dispatchEvent(Event(Event.COMPLETE))
                 } else {

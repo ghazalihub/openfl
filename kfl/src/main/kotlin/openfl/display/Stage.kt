@@ -18,6 +18,9 @@ class Stage : DisplayObjectContainer() {
     var stageWidth: Int = 0
         internal set
 
+    internal var __mouseX: Double = 0.0
+    internal var __mouseY: Double = 0.0
+
     init {
         __drawableType = IBitmapDrawableType.STAGE
         stage = this
