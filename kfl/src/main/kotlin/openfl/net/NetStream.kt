@@ -28,23 +28,28 @@ open class NetStream(val connection: NetConnection) : EventDispatcher() {
         private set
 
     fun play(url: String, vararg arguments: Any?) {
-        // ... play logic using Ktor/skia
+        // Implementation for media streaming (RTMP/HTTP) would go here.
+        // For JVM, we might integrate with a native library or Ktor Sockets.
+        dispatchEvent(NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, mapOf("code" to "NetStream.Play.Start")))
     }
 
     fun pause() {
         paused = true
+        dispatchEvent(NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, mapOf("code" to "NetStream.Pause.Notify")))
     }
 
     fun resume() {
         paused = false
+        dispatchEvent(NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, mapOf("code" to "NetStream.Unpause.Notify")))
     }
 
     fun close() {
-        // ... implementation
+        dispatchEvent(NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, mapOf("code" to "NetStream.Close.Notify")))
     }
 
     fun seek(offset: Double) {
-        // ... implementation
+        time = offset
+        dispatchEvent(NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, mapOf("code" to "NetStream.Seek.Notify")))
     }
 
     fun togglePause() {

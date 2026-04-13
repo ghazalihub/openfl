@@ -17,7 +17,7 @@ class NativeWindow(val initOptions: NativeWindowInitOptions? = null) : EventDisp
     internal var __window: Window? = null
 
     fun activate() {
-        // ... focus window
+        __window?.let { org.lwjgl.glfw.GLFW.glfwFocusWindow(it.handle) }
     }
 
     fun close() {
@@ -25,15 +25,15 @@ class NativeWindow(val initOptions: NativeWindowInitOptions? = null) : EventDisp
     }
 
     fun maximize() {
-        // ... maximize window
+        __window?.let { org.lwjgl.glfw.GLFW.glfwMaximizeWindow(it.handle) }
     }
 
     fun minimize() {
-        // ... minimize window
+        __window?.let { org.lwjgl.glfw.GLFW.glfwIconifyWindow(it.handle) }
     }
 
     fun restore() {
-        // ... restore window
+        __window?.let { org.lwjgl.glfw.GLFW.glfwRestoreWindow(it.handle) }
     }
 }
 

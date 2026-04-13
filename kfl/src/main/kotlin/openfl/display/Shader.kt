@@ -37,24 +37,36 @@ open class Shader(var byteCode: ByteArray? = null) {
     }
 
     internal open fun __initGL() {
-        // LWJGL shader compilation logic
+        val vs = org.lwjgl.opengl.GL20.glCreateShader(org.lwjgl.opengl.GL20.GL_VERTEX_SHADER)
+        org.lwjgl.opengl.GL20.glShaderSource(vs, glVertexSource!!)
+        org.lwjgl.opengl.GL20.glCompileShader(vs)
+
+        val fs = org.lwjgl.opengl.GL20.glCreateShader(org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER)
+        org.lwjgl.opengl.GL20.glShaderSource(fs, glFragmentSource!!)
+        org.lwjgl.opengl.GL20.glCompileShader(fs)
+
+        __glProgram = org.lwjgl.opengl.GL20.glCreateProgram()
+        org.lwjgl.opengl.GL20.glAttachShader(__glProgram, vs)
+        org.lwjgl.opengl.GL20.glAttachShader(__glProgram, fs)
+        org.lwjgl.opengl.GL20.glLinkProgram(__glProgram)
+
         __glSourceDirty = false
     }
 
     internal open fun __update() {
-        // Upload uniforms
+        // Uniform updates would happen here based on ShaderData
     }
 
     internal open fun __enable() {
         __init()
         if (__glProgram != 0) {
-            // glUseProgram
+            org.lwjgl.opengl.GL20.glUseProgram(__glProgram)
         }
     }
 
     internal open fun __disable() {
         if (__glProgram != 0) {
-            // glUseProgram(0)
+            org.lwjgl.opengl.GL20.glUseProgram(0)
         }
     }
 }

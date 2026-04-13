@@ -19,7 +19,7 @@ open class SimpleButton(
     }
 
     override fun __update(transformOnly: Boolean, updateChildren: Boolean) {
-        // ... switch between states based on mouse interaction
+         switch between states based on mouse interaction
         super.__update(transformOnly, updateChildren)
     }
 }

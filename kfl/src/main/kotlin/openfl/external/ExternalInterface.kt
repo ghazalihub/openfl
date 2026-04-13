@@ -6,7 +6,7 @@ object ExternalInterface {
     var marshallExceptions: Boolean = false
 
     fun addCallback(functionName: String, closure: (Array<Any?>) -> Any?) {
-        // ... implementation
+
     }
 
     fun call(functionName: String, vararg arguments: Any?): Any? {

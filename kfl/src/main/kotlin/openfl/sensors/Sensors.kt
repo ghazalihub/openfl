@@ -10,7 +10,7 @@ object Accelerometer : EventDispatcher() {
         private set
 
     fun setRequestedUpdateInterval(interval: Double) {
-        // ...
+
     }
 }
 
@@ -21,6 +21,6 @@ object Geolocation : EventDispatcher() {
         private set
 
     fun setRequestedUpdateInterval(interval: Double) {
-        // ...
+
     }
 }

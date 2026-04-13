@@ -22,14 +22,15 @@ class FileStream : EventDispatcher() {
 
     fun close() {
         __file?.close()
-        __window = null
+        __file = null
     }
 
     fun readBytes(bytes: ByteArray, offset: Int = 0, length: Int = 0) {
-        val len = if (length == 0) __file?.length()?.toInt() ?: 0 else length
+        val len = if (length == 0) (bytesAvailable().toInt()) else length
         val buffer = kotlin.ByteArray(len)
         __file?.read(buffer)
-        bytes.writeUTFBytes(String(buffer)) // Simplified
+        bytes.position = offset
+        bytes.writeBytes(ByteArray.fromByteArray(buffer))
     }
 
     fun writeBytes(bytes: ByteArray, offset: Int = 0, length: Int = 0) {
@@ -37,7 +38,9 @@ class FileStream : EventDispatcher() {
         __file?.write(bytes.toByteArray(), offset, len)
     }
 
-    private var __window: Any? = null
+    fun bytesAvailable(): Long {
+        return (__file?.length() ?: 0) - (__file?.filePointer ?: 0)
+    }
 }
 
 enum class FileMode {

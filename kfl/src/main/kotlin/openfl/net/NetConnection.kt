@@ -25,7 +25,9 @@ open class NetConnection : EventDispatcher() {
     }
 
     fun call(command: String, responder: Responder? = null, vararg arguments: Any?) {
-        // ... AMF call implementation
+        // Implementation for AMF (Action Message Format) RPC calls would go here.
+        // For Kotlin/JVM, this would likely use a Ktor-based AMF client.
+        responder?.status?.invoke(mapOf("code" to "NetConnection.Call.Failed"))
     }
 }
 

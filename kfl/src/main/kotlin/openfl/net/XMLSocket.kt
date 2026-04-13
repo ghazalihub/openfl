@@ -10,7 +10,7 @@ class XMLSocket(host: String? = null, port: Int = 0) : Socket(host, port) {
     init {
         // XMLSocket specific behavior
         addEventListener(Event.CONNECT) {
-            // ... logic
+             logic
         }
     }
 

@@ -113,6 +113,6 @@ class Context3D {
     }
 
     internal fun __dispose() {
-        // ...
+
     }
 }

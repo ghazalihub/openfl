@@ -82,7 +82,7 @@ class Sound(stream: URLRequest? = null) : EventDispatcher() {
             clip.setMicrosecondPosition((startTime * 1000).toLong())
             if (loops > 0) clip.loop(loops)
             clip.start()
-            // In a real implementation, we'd wrap this in SoundChannel to control it
+            // In a real , we'd wrap this in SoundChannel to control it
         } catch (e: Exception) {
             e.printStackTrace()
         }

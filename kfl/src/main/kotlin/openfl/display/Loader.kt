@@ -35,7 +35,20 @@ open class Loader : DisplayObjectContainer() {
     }
 
     fun loadBytes(bytes: openfl.utils.ByteArray, context: openfl.system.LoaderContext? = null) {
-        // ... Implementation for loading from bytes
+        // Implementation for loading from bytes (decoding PNG/JPEG)
+        try {
+            val bis = java.io.ByteArrayInputStream(bytes.toByteArray())
+            val bufferedImage = javax.imageio.ImageIO.read(bis)
+            if (bufferedImage != null) {
+                val bitmapData = BitmapData.fromBufferedImage(bufferedImage)
+                val bitmap = Bitmap(bitmapData)
+                content = bitmap
+                addChild(bitmap)
+                contentLoaderInfo.dispatchEvent(Event(Event.COMPLETE))
+            }
+        } catch (e: Exception) {
+            contentLoaderInfo.dispatchEvent(IOErrorEvent(IOErrorEvent.IO_ERROR, text = e.message ?: "Decoding error"))
+        }
     }
 
     fun unload() {
