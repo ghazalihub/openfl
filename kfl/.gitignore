@@ -1,0 +1,5 @@
+build/
+.gradle/
+*.log
+test_output.txt
+gradle_marker.txt
